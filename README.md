@@ -10,7 +10,6 @@ You might recall that metaprogramming is the practice of writing code that write
 
 Let's say we want to use the Twitter API to create users for our own application. The scenario is that we are developing a web application and we want our users to be able to sign in via Twitter. Thus, our own users are pulled from Twitter and we need to take the data we get from Twitter—for example a user's name, age and location—and use them to make instances of our own User class. Let's take a look at a code snippet:
 
-
 ```ruby
 class User
   attr_accessor :name, :age, :location, :user_name
@@ -23,6 +22,7 @@ class User
   end
 end
 ```
+
 Here we have our user class. It initializes with keyword arguments, i.e., a hash of attributes. For the purposes of this example, we won't get into the specifics of how we request and receive data from the Twitter API. Suffice to say that we send a request to the Twitter API and get a return value of a hash full of user attributes. For example:
 
 ```ruby
@@ -42,12 +42,13 @@ So far so good. But, what if Twitter changes their API without telling us? (How 
 new_twitter_user = {name: "Sophie", user_name: "sm_debenedetto", location: "NY, NY"}
 ```
 
-Notice that the `new_twitter_user` no longer has an age.  Let's see what happens if we try to create new Users using the same old User class code:
+Notice that the `new_twitter_user` no longer has an age. Let's see what happens if we try to create new Users using the same old User class code:
 
 ```ruby
 User.new(new_twitter_user)
-=>ArgumentError: missing keyword: age
+# =>ArgumentError: missing keyword: age
 ```
+
 Our program broke! Let's play it with another scenario. Let's say the Twitter API changed and now returns data to us in the following manner:
 
 ```ruby
@@ -58,10 +59,10 @@ Now let's see what happens when we try to make a new instance of our User class 
 
 ```ruby
 User.new(newest_twitter_user)
-=> ArgumentError: unknown keyword: bio
+# => ArgumentError: unknown keyword: bio
 ```
 
-Our program breaks! Clearly, we need a way to *abstract away* our User class' dependency on specific attributes. If only there were a way for us to tell our User to get ready to accept some unspecified number and type of attributes.
+Our program breaks! Clearly, we need a way to _abstract away_ our User class' dependency on specific attributes. If only there were a way for us to tell our User to get ready to accept some unspecified number and type of attributes.
 
 ## Mass Assignment and Metaprogramming
 
@@ -117,7 +118,7 @@ Now, when we use the `.name` getter method, it will return the correct name:
 
 ```ruby
 sophie.name
-  => "Sophie"
+# => "Sophie"
 ```
 
 Let's look at the same behavior using `.send`
@@ -160,7 +161,7 @@ First, we need to remember that `attr_accessor` is a class method just like `att
 ```ruby
 class User
   def initialize(attributes)
-    attributes.each do |key, value| 
+    attributes.each do |key, value|
       self.class.attr_accessor(key)
       self.send(("#{key}="), value)
     end
@@ -172,4 +173,4 @@ By making that one small change, we can now get and set every attribute on an ob
 
 ## Why is this useful?
 
-With this pattern, we have made our code much more flexible. We can easily alter the number of attributes in the class and change the hash that we initialize the class with, *without editing our initialize method.* Now, we're programming for the future. Our initialize method is flexible and we can leave it alone. That is one major goal of design in object oriented programming––the writing of code that accommodates future change and doesn't require a lot of modification, even as it grows.
+With this pattern, we have made our code much more flexible. We can easily alter the number of attributes in the class and change the hash that we initialize the class with, _without editing our initialize method._ Now, we're programming for the future. Our initialize method is flexible and we can leave it alone. That is one major goal of design in object oriented programming––the writing of code that accommodates future change and doesn't require a lot of modification, even as it grows.
